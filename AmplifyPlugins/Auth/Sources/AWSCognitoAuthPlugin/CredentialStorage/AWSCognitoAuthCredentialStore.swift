@@ -28,17 +28,23 @@ struct AWSCognitoAuthCredentialStore {
 
     private let authConfiguration: AuthConfiguration
     private let keychain: KeychainStoreBehavior
-    private let userDefaults = UserDefaults.standard
+    private var userDefaults = UserDefaults.standard
 
     init(authConfiguration: AuthConfiguration, accessGroup: String? = nil) {
         self.authConfiguration = authConfiguration
         self.keychain = KeychainStore(service: service, accessGroup: accessGroup)
 
+        if let accessGroup {
+            self.userDefaults = UserDefaults(suiteName: accessGroup) ?? UserDefaults.standard
+        } else {
+            self.userDefaults = UserDefaults.standard
+        }
+        
         if !userDefaults.bool(forKey: isKeychainConfiguredKey) {
             try? clearAllCredentials()
             userDefaults.set(true, forKey: isKeychainConfiguredKey)
         }
-
+        
         restoreCredentialsOnConfigurationChanges(currentAuthConfig: authConfiguration)
         // Save the current configuration
         saveAuthConfiguration(authConfig: authConfiguration)
@@ -141,6 +147,8 @@ extension AWSCognitoAuthCredentialStore: AmplifyAuthCredentialStoreBehavior {
     func deleteCredential() throws {
         let authCredentialStoreKey = generateSessionKey(for: authConfiguration)
         try keychain._remove(authCredentialStoreKey)
+        userDefaults.set(false, forKey: isKeychainConfiguredKey)
+        try clearAllCredentials()
     }
 
     func saveDevice(_ deviceMetadata: DeviceMetadata, for username: String) throws {
@@ -181,6 +189,7 @@ extension AWSCognitoAuthCredentialStore: AmplifyAuthCredentialStoreBehavior {
 
     private func clearAllCredentials() throws {
         try keychain._removeAll()
+        print("✅ Clearing all credentials from keychain.")
     }
 
 }

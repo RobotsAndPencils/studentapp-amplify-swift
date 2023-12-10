@@ -87,12 +87,16 @@ extension StateMachine: EventDispatcher {
             byApplying: event
         )
 
+        let actions: String = resolution.actions.map { $0.identifier }.joined(separator: "-")
+        print("☑️ resolving \(currentState.type) by applying \(event.type)  equals to \(resolution.newState.type) \n actions: \(actions)")
+                
         if currentState != resolution.newState {
             currentState = resolution.newState
             subscribers.removeAll { item in
                 !notify(subscriberElement: item, about: resolution.newState)
             }
         }
+        
         execute(resolution.actions)
     }
 

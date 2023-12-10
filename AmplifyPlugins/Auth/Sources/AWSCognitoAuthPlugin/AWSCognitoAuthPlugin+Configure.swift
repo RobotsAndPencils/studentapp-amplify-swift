@@ -34,7 +34,7 @@ extension AWSCognitoAuthPlugin {
         jsonConfiguration = jsonValueConfiguration
 
         let authConfiguration = try ConfigurationHelper.authConfiguration(jsonValueConfiguration)
-
+        
         let credentialStoreResolver = CredentialStoreState.Resolver().eraseToAnyResolver()
         let credentialEnvironment = credentialStoreEnvironment(authConfiguration: authConfiguration)
         let credentialStoreMachine = StateMachine(resolver: credentialStoreResolver,
@@ -172,7 +172,7 @@ extension AWSCognitoAuthPlugin {
     }
 
     private func makeCredentialStore() -> AmplifyAuthCredentialStoreBehavior {
-        AWSCognitoAuthCredentialStore(authConfiguration: authConfiguration)
+        AWSCognitoAuthCredentialStore(authConfiguration: authConfiguration, accessGroup: accessGroup)
     }
 
     private func makeLegacyKeychainStore(service: String) -> KeychainStoreBehavior {

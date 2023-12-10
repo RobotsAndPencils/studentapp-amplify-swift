@@ -11,6 +11,8 @@ import AWSPluginsCore
 
 public final class AWSCognitoAuthPlugin: AWSCognitoAuthPluginBehavior {
 
+    var accessGroup: String?
+
     var authEnvironment: AuthEnvironment!
 
     var authStateMachine: AuthStateMachine!
@@ -45,6 +47,12 @@ public final class AWSCognitoAuthPlugin: AWSCognitoAuthPluginBehavior {
 
     /// Instantiates an instance of the AWSCognitoAuthPlugin.
     public init() {
+        self.networkPreferences = nil
+    }
+
+    // Instantiates an instance of the AWSCognitoAuthPlugin.
+    public init(accessGroup: String? = nil) {
+        self.accessGroup = accessGroup
         self.networkPreferences = nil
     }
 
